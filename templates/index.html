@@ -4,26 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flask App</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        h1 {
+            color: #333;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Príspevky</h1>
-    <ul>
-        {% for item in items %}
-        <li id="item-{{ item._id }}">
-            {{ item.name }} - {{ item.description }}
-            <button onclick="removeItem('{{ item._id }}')">Remove</button>
-        </li>
-        {% endfor %}
-    </ul>
-
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script>
-    function removeItem(item_id) {
-        $.post('/remove/' + item_id, {}, function() {
-            $('#item-' + item_id).remove();
-        });
-    }
-    </script>
+    <h1>Welcome to the Flask App!</h1>
+    <div class="container">
+        <form id="addForm" method="post" action="/data">
+            <input type="text" name="item" placeholder="Add an item" required>
+            <button type="submit">Add</button>
+        </form>
+        <div id="items">
+            {% for item in items %}
+            <div class="item">
+                <span>{{ item.item }}</span>
+                <form method="post" action="/delete" style="display:inline;">
+                    <input type="hidden" name="item" value="{{ item.item }}">
+                    <button type="submit">Delete</button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
 </body>
 </html>
