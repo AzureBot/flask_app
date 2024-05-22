@@ -5,10 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flask App</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    </style>
 </head>
 <body>
-    <h1>Welcome to the Flask App!</h1>
+    <h1>Príspevky</h1>
     <p>This is a simple Flask application deployed on Render.</p>
+    <ul>
+        {% for item in items %}
+        <li id="item-{{ item._id }}">
+            {{ item.name }} - {{ item.description }}
+            <button onclick="removeItem('{{ item._id }}')">Remove</button>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+    function removeItem(item_id) {
+        $.post('/remove/' + item_id, {}, function() {
+            $('#item-' + item_id).remove();
+        });
+    }
+    </script>
 </body>
 </html>
