@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: my-flask-app
+    env: docker
+    repo: https://github.com/your-username/your-repo # Zmeňte na váš skutočný GitHub repozitár
+    branch: main
+    dockerfilePath: Dockerfile
+    healthCheckPath: /
+    envVars:
+      - key: DATABASE_URL
+        value: mongodb://db:27017/mydatabase
+
+  - type: private_service
+    name: mongodb
+    env: docker
+    repo: https://github.com/your-username/your-repo # Zmeňte na váš skutočný GitHub repozitár
+    branch: main
+    dockerfilePath: Dockerfile
+    command: mongod --bind_ip_all
+    healthCheckPath: /
+    envVars:
+      - key: MONGO_INITDB_DATABASE
+        value: mydatabase
