@@ -1,31 +1,44 @@
 import os
 from flask import Flask, jsonify, request, render_template, redirect, url_for
-from pymongo import MongoClient
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 
-# Konfigurácia MongoDB
-mongo_url = os.getenv("DATABASE_URL", "mongodb://db:27017/mydatabase")
-client = MongoClient(mongo_url)
-db = client.mydatabase
+# Konfigurácia PostgreSQL
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
+
+class Item(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    item = db.Column(db.String(80), nullable=False)
+
+@app.before_first_request
+def create_tables():
+    db.create_all()
 
 @app.route('/')
 def index():
-    items = list(db.items.find({}, {'_id': False}))
+    items = Item.query.all()
     return render_template('index.html', items=items)
 
 @app.route('/data', methods=['POST'])
 def add_data():
-    item = request.form.get('item')
-    if item:
-        db.items.insert_one({'item': item})
+    item_text = request.form.get('item')
+    if item_text:
+        new_item = Item(item=item_text)
+        db.session.add(new_item)
+        db.session.commit()
     return redirect(url_for('index'))
 
 @app.route('/delete', methods=['POST'])
 def delete_data():
-    item = request.form.get('item')
-    if item:
-        db.items.delete_one({'item': item})
+    item_text = request.form.get('item')
+    if item_text:
+        item_to_delete = Item.query.filter_by(item=item_text).first()
+        if item_to_delete:
+            db.session.delete(item_to_delete)
+            db.session.commit()
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
