@@ -16,11 +16,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     'item': itemText
                 })
             })
-            .then(response => response.json())
-            .then(data => {
+            .then(() => {
                 const itemDiv = document.createElement('div');
                 itemDiv.className = 'item';
-                itemDiv.innerHTML = `<span>${data.item}</span><button class="deleteBtn" data-item="${data.item}">Delete</button>`;
+                itemDiv.innerHTML = `<span>${itemText}</span><button class="deleteBtn" data-item="${itemText}">Delete</button>`;
                 itemsContainer.appendChild(itemDiv);
                 itemInput.value = '';
             })
